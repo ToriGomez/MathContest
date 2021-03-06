@@ -1,11 +1,19 @@
-﻿Option Explicit On
+﻿'Tori Gomez
+'RCET 0265
+'Spring 2021
+'Math Contest
+'https://github.com/ToriGomez/MathContest.git
+
+Option Explicit On
 Option Strict On
 Option Compare Text
 
 Public Class MathContestForm
+    'Dissallows User to enter information other than Student inforation.
     Private Sub MathContestForm_Load(sender As Object, e As EventArgs) Handles Me.Load
         DisabledControls()
     End Sub
+    'Enables problem type and student answer to be entered if student information is valid.
     Private Sub GradeTextBox_Validated(sender As Object, e As EventArgs) Handles GradeTextBox.Validated
         If Validation() Then
             DisabledControls()
@@ -17,9 +25,12 @@ Public Class MathContestForm
             StudentAnswerTextBox.Select()
         End If
     End Sub
+    'Allows to submit student answer once it is entered.
     Private Sub StudentAnswerTextBox_Validated(sender As Object, e As EventArgs) Handles StudentAnswerTextBox.Validated
         SubmitButton.Enabled = True
     End Sub
+    'Checks Student answer to the math problem type with both random numbers. Repeats process continously to 
+    'enter as many different math anwsers as desired.
     Private Sub SubmitButton_Click(sender As Object, e As EventArgs) Handles SubmitButton.Click
         Dim firstNumber As Integer = CInt(FirstNumberTextBox.Text)
         Dim secondNumber As Integer = CInt(SecondNumberTextBox.Text)
@@ -45,6 +56,7 @@ Public Class MathContestForm
         StudentAnswerTextBox.Text = ""
         StudentAnswerTextBox.Select()
     End Sub
+    'Clears all information entered and student summary, to allow user to enter new student information.
     Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
         InputInfoGroupBox.Enabled = True
         Scorecount("incorrect", True)
@@ -57,13 +69,17 @@ Public Class MathContestForm
         StudentAnswerTextBox.Text = ""
         NameTextBox.Select()
     End Sub
+    'Messages the accumulated Score for student's answers. With student name to how many answers correct
+    'to how many attempts made.
     Private Sub SummaryButton_Click(sender As Object, e As EventArgs) Handles SummaryButton.Click
         Dim result() As Integer = Scorecount("startup", False)
         MsgBox($"{NameTextBox.Text} got {result(0)} correct out of possible {result(1)}")
     End Sub
+    'Enables for the user to exit the program.
     Private Sub ExitButton_MouseClick(sender As Object, e As MouseEventArgs) Handles ExitButton.MouseClick
         Me.Close()
     End Sub
+    'Alerts the user of the result of each answer submitted with the correct number.
     Sub Results(answerInput As Integer)
         If Trim(StudentAnswerTextBox.Text) = CStr(answerInput) Then
             MsgBox(($"CONGRATULATIONS!! {answerInput} is correct"))
@@ -73,11 +89,14 @@ Public Class MathContestForm
             Scorecount("incorrect", False)
         End If
     End Sub
+    'Randomizes the first and second number with the second number to never be 0 in case if
+    'division math problem type is selected.
     Sub RandomNumbers()
         Randomize(DateTime.Now.Millisecond)
         FirstNumberTextBox.Text = CStr(CInt(12 * Rnd()))
         SecondNumberTextBox.Text = CStr(CInt(11 * Rnd() + 1))
     End Sub
+    'Accumulates the correct answers and the attempts from the student.
     Function Scorecount(state As String, clear As Boolean) As Integer()
         Static result(1) As Integer
         Dim score As Integer = 1
@@ -97,6 +116,8 @@ Public Class MathContestForm
         End If
         Return result
     End Function
+    'dissallows the user to ever change values of the random first and second numbers in the
+    'Current Math Problem Group Box.
     Sub InputProblemEnable(state As Boolean)
         If Not state Then
             FirstNumberTextBox.Enabled = False
@@ -108,6 +129,7 @@ Public Class MathContestForm
             StudentAnswerTextBox.Enabled = True
         End If
     End Sub
+    'Dissables desired proagram load controls to enter student information.
     Sub DisabledControls()
         SubmitButton.Enabled = False
         SummaryButton.Enabled = False
@@ -115,6 +137,8 @@ Public Class MathContestForm
         AddRadioButton.Checked = True
         InputProblemTypeGroupBox.Enabled = False
     End Sub
+    'Checks Student information entered to check to see if student is valid
+    'to be in the contest. Flags the user and prompts user to fix invaild information.
     Function Validation() As Boolean
         Dim status As Boolean = False
         Dim problemMessage As String = ""
